@@ -33,6 +33,10 @@ export const updateTask = async (req, res) => {
     const { id } = req.params;
     const task = req.body;
 
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ success: false, message: "Invalid task ID" });
+    }
+
     try {
         const updatedTask = await Task.findByIdAndUpdate(id, task, {new: true});
         res.status(200).json({ success: true, data: updatedTask });
@@ -43,10 +47,15 @@ export const updateTask = async (req, res) => {
 
 export const deleteTask = async (req, res) => {
     const {id} = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ success: false, message: "Invalid task ID" });
+    }
+    
     try {
         await Task.findByIdAndDelete(id);
         res.status(200).json({ success: true, message: "Task deleted" });
     } catch (error) {
-        res.status(404).json({ success: false, message: "Task not found" });
+        res.status(500).json({ success: false, message: "Server error" });
     }
 };
