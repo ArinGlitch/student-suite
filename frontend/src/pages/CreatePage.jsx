@@ -10,6 +10,8 @@ import {
   Heading 
 } from '@chakra-ui/react';
 import React from 'react'
+import { useTaskBoard } from '../board/task.js';
+import { useToast } from '@chakra-ui/react';
 
 const CreatePage = () => {
   const [newTask, setNewTask] = React.useState({
@@ -19,9 +21,34 @@ const CreatePage = () => {
     priority: "",
   });
 
-  const handleAddTask = () => {
-    // Add your logic to handle adding a new task
-    console.log("New Task:", newTask);
+  const toast = useToast();
+
+  const {createTask} = useTaskBoard();
+
+  const handleAddTask = async() => {
+    const {success, message} = await createTask(newTask);
+    if (!success) {
+      toast({
+        title: "Error",
+        description: message,
+        status: "error",
+        isClosable: true,
+      });
+    } else {
+      toast({
+        title: "Success",
+        description: message,
+        status: "success",
+        isClosable: true,
+      });
+      setNewTask({
+      title: "",
+      description: "",
+      dueDate: "",
+      priority: "",
+    });
+    }
+    
   }
 
   return <Container maxW={"container.sm"}>
@@ -57,9 +84,9 @@ const CreatePage = () => {
             value={newTask.priority}
             onChange={(e) => setNewTask({ ...newTask, priority: e.target.value })}
           >
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
           </Select>
 
           <Button colorScheme={"blue"} onClick={handleAddTask} w={"full"}>
