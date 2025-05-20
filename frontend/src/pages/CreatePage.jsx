@@ -26,6 +26,7 @@ const CreatePage = () => {
   const {createTask} = useTaskBoard();
 
   const handleAddTask = async() => {
+    console.log("Creating task: ", newTask);
     const {success, message} = await createTask(newTask);
     if (!success) {
       toast({

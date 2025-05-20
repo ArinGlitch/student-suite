@@ -25,6 +25,38 @@ const useTaskBoard = create((set) => ({
         const data = await res.json();
         set({ tasks: data.data });
     },
+    deleteTask: async (tid) => {
+        const res = await fetch(`/api/tasks/${tid}`, {
+            method: "DELETE",
+        });
+        const data = await res.json();
+        if (!data.success) {
+            return {success: false, message: data.message};
+        }
+        set((state) => ({
+            tasks: state.tasks.filter((task) => task._id !== tid),
+        }));
+        return {success: true, message: data.message};
+    },
+    updateTask: async (tid, updatedTask) => {
+        const res = await fetch(`/api/tasks/${tid}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(updatedTask),
+        });
+        const data = await res.json();
+        if (!data.success) {
+            return {success: false, message: data.message};
+        }
+        set((state) => ({
+            tasks: state.tasks.map((task) =>
+                task._id === tid ? data.data : task
+            ),
+        }));
+        return {success: true, message: data.message};
+    },
 }));
 
 export { useTaskBoard };
